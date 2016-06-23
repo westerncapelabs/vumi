@@ -8,6 +8,7 @@ from zope.interface import implements
 from vumi.config import (
     Config, ConfigDict, ConfigRegex, ConfigText, ConfigInt, ConfigBool)
 from vumi.message import TransportUserMessage
+from vumi.errors import ConfigError
 from vumi.transports.smpp.iprocessors import (
     IDeliveryReportProcessor, IDeliverShortMessageProcessor,
     ISubmitShortMessageProcessor)
@@ -268,8 +269,11 @@ class DeliverShortMessageProcessor(object):
             9: 'shift_jis',
             10: 'iso2022_jp'
         }
-        self.data_coding_map.update(dict((int(key), value) for (
-            key, value) in self.config.data_coding_overrides.items()))
+        try:
+            self.data_coding_map.update(dict((int(key), value) for (
+                key, value) in self.config.data_coding_overrides.items()))
+        except ValueError:
+            raise ConfigError("data_coding_map keys must able to be integers")
         self.allow_empty_messages = self.config.allow_empty_messages
 
     def dcs_decode(self, obj, data_coding):
