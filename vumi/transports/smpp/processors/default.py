@@ -268,7 +268,8 @@ class DeliverShortMessageProcessor(object):
             9: 'shift_jis',
             10: 'iso2022_jp'
         }
-        self.data_coding_map.update(self.config.data_coding_overrides)
+        self.data_coding_map.update(dict((int(key), value) for (
+            key, value) in self.config.data_coding_overrides.items()))
         self.allow_empty_messages = self.config.allow_empty_messages
 
     def dcs_decode(self, obj, data_coding):
